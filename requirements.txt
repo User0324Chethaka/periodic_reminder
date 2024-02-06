@@ -1,0 +1,7 @@
+DateTime==5.4
+jeepney==0.8.0
+loguru==0.6.0
+notify-py==0.3.42
+plyer==2.1.0
+pytz==2024.1
+zope.interface==6.1
