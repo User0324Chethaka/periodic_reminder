@@ -1,32 +1,19 @@
-from plyer import notification
 from datetime import datetime, timedelta
+from plyer import notification
 import json
 import sys
+import os
 
 
-def main():
-    user_input_file = r"./user_input.json"
-    work_time_min = None #  Time to work in int
-    rest_time_min = None #  Time to rest in int
-    with open(user_input_file, "r") as jf:
-        f = json.load(jf)
-        work_time_min = f["work_time"]
-        rest_time_min = f["rest_time"]
+def run_periodic_notification(work_time_: float, rest_time_: float) -> None: 
 
-    # No user input notification / warning 
-    if work_time_min == '' or rest_time_min == '':
-        notification.notify(
-            title = 'WARNING !!!',
-            message = 'No user input provided ',
-            timeout = 20
-        )
-        sys.exit()
-
-    end_point = datetime.now()
+    end_point: datetime = datetime.now()
     while True:
-        now = datetime.now()
-        work_time = timedelta(minutes=work_time_min) # Work time as datetime
-        rest_time = timedelta(minutes=rest_time_min) # Rest tiem as datetime
+        now: datetime = datetime.now()
+        work_time = timedelta(seconds=work_time_) # Work time as datetime
+        rest_time = timedelta(seconds=rest_time_) # Rest tiem as datetime
+        print(now - end_point)
+
         if work_time <= now - end_point:
             end_point += work_time
             notification.notify(
@@ -34,6 +21,7 @@ def main():
                 message = 'Take a break now', 
                 timeout = 10
             )
+
         elif rest_time <= now - end_point:
             end_point += rest_time
             notification.notify(
@@ -41,6 +29,44 @@ def main():
                 message = 'Break over: start work',
                 timeout = 10
             )
+
+
+def valid_input(input) -> bool: 
+    ''' chekc whether given user input is valid'''
+    
+    if any(e == '' or not e.isdigit() for e in input):
+        # raise an error notification
+        notification.notify(
+            title = "WARNING !!!",
+            message = 'No invalid input provided\nEXITING PROGRAM\nRerun to activate',
+            timeout = 20
+        )
+        sys.exit()
+    else: 
+        # valid input 
+        return True
+
+
+def read_input(rel_path: str) -> tuple[str, str]:
+    ''' read user input from a json file and return them'''
+
+    script_dir_path: str = os.path.dirname(os.path.abspath(__file__))
+    input_file_path: str = os.path.join(script_dir_path, rel_path)
+
+    with open(input_file_path, "r") as jf:
+        f = json.load(jf)
+
+    return f.get("work_time"), f.get("rest_time")
+
+
+def main() -> None:
+    user_input_data: tuple = read_input(r"./user_input.json") 
+
+    if valid_input(user_input_data): 
+        work_time_min: float = float(user_input_data[0])
+        rest_time_min: float = float(user_input_data[1])
+
+    run_periodic_notification(work_time_min, rest_time_min)
 
 
 if __name__ == '__main__':
