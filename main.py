@@ -5,27 +5,40 @@ import sys
 import os
 
 
+def start_msg() -> None:
+    notification.notify(
+        title = 'Periodic Reminder',
+        message = 'Program started',
+        timeout = 10
+    )
+
+
 def run_periodic_notification(work_time_: float, rest_time_: float) -> None: 
 
-    end_point: datetime = datetime.now()
+    start_msg()
+    last_run: datetime = datetime.now()
+
+    i: int = 0
     while True:
-        now: datetime = datetime.now()
         work_time = timedelta(seconds=work_time_) # Work time as datetime
         rest_time = timedelta(seconds=rest_time_) # Rest tiem as datetime
-        print(now - end_point)
 
-        if work_time <= now - end_point:
-            end_point += work_time
+        next_run: datetime = last_run + work_time if i % 2 == 0 else last_run +rest_time
+
+        if datetime.now() >= next_run and i % 2 ==0: 
+            i += 1
+            last_run = datetime.now() # update last time notification was shown
             notification.notify(
-                title = '5 minure break',
+                title = 'Periodic Reminder 5 Minure Break',
                 message = 'Take a break now', 
                 timeout = 10
             )
 
-        elif rest_time <= now - end_point:
-            end_point += rest_time
+        elif datetime.now() >= next_run and i % 2 == 1:
+            i += 1
+            last_run = datetime.now()
             notification.notify(
-                title = 'Start work now', 
+                title = 'Periodic Reminder Start Work Now', 
                 message = 'Break over: start work',
                 timeout = 10
             )
@@ -37,7 +50,7 @@ def valid_input(input) -> bool:
     if any(e == '' or not e.isdigit() for e in input):
         # raise an error notification
         notification.notify(
-            title = "WARNING !!!",
+            title = "Periodic Reminder WARNING !!!",
             message = 'No invalid input provided\nEXITING PROGRAM\nRerun to activate',
             timeout = 20
         )
