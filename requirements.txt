@@ -1,0 +1,4 @@
+DateTime==5.4
+plyer==2.1.0
+pytz==2024.1
+zope.interface==6.2
