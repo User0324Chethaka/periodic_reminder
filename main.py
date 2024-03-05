@@ -20,8 +20,8 @@ def run_periodic_notification(work_time_: float, rest_time_: float) -> None:
 
     i: int = 0
     while True:
-        work_time = timedelta(seconds=work_time_) # Work time as datetime
-        rest_time = timedelta(seconds=rest_time_) # Rest tiem as datetime
+        work_time = timedelta(minutes=work_time_) # Work time as datetime
+        rest_time = timedelta(minutes=rest_time_) # Rest tiem as datetime
 
         next_run: datetime = last_run + work_time if i % 2 == 0 else last_run +rest_time
 
